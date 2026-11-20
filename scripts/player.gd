@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-## Movement speed in pixels per second
+## Movement speed in pixels per second.
 @export var speed: float = 300.0
 
 
