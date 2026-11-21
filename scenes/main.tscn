@@ -6,7 +6,7 @@
 [node name="Main" type="Node2D" unique_id=1883460091]
 script = ExtResource("1_0wfyh")
 
-[node name="Player" parent="." unique_id=1676975110 instance=ExtResource("1_o5qli")]
+[node name="Player" parent="." unique_id=1676975110 groups=["player"] instance=ExtResource("1_o5qli")]
 position = Vector2(480, 270)
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=1399780613]

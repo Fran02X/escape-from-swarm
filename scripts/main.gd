@@ -14,12 +14,14 @@ func _ready() -> void:
 
 func _spawn_enemy() -> void:
 	var enemy := ENEMY_SCENE.instantiate()
+	
 	enemy.position = _random_edge_position()
 	add_child(enemy)
 
 
 func _random_edge_position() -> Vector2:
 	var screen := get_viewport_rect().size
+	
 	match randi() % 4:
 		0: 
 			return Vector2(randf_range(0.0, screen.x), -SPAWN_MARGIN)
