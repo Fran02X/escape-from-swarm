@@ -1,7 +1,12 @@
+class_name Bullet
 extends Area2D
+
+@export var lifetime: float = 3.0
 
 var direction := Vector2.RIGHT
 var speed := 500.0
+
+var _age := 0.0
 
 
 func _ready() -> void:
@@ -10,6 +15,9 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	global_position += direction * speed * delta
+	_age += delta
+	if _age >= lifetime:
+		queue_free()
 
 
 func _on_body_entered(body: Node2D) -> void:

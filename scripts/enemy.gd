@@ -1,6 +1,9 @@
+class_name Enemy
 extends CharacterBody2D
 
-##Enemies are slower than the player so they can be dodged.
+signal died
+
+## Enemies are slower than the player so they can be dodged.
 @export var speed: float = 120.0
 @export var health: int = 3
 
@@ -24,6 +27,7 @@ func _physics_process(_delta: float) -> void:
 func take_damage(amount: int) -> void:
 	health -= amount
 	if health <= 0:
+		died.emit()
 		queue_free()
 
 
