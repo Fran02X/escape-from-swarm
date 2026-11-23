@@ -6,17 +6,20 @@ signal died
 @export var speed: float = 300.0
 ## Seconds between shots.
 @export var fire_interval: float = 0.4
-@export var bullet_speed: float = 500.0
 @export var max_health: int = 3
+@export var contact_damage: int = 1
 
 const BULLET_SCENE := preload("res://scenes/bullet.tscn")
 const INVULNERABLE_TIME := 1.0
+const INVULNERABLE_ALPHA := 0.35
+const BLINK_RATE := 10.0
 
 var health: int
 var _fire_cooldown := 0.0
 var _invulnerable_time := 0.0
 
 @onready var hurtbox: Area2D = $Hurtbox
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 
 func _ready() -> void:
@@ -39,7 +42,10 @@ func _physics_process(delta: float) -> void:
 	
 	if _invulnerable_time > 0.0:
 		_invulnerable_time -= delta
-		modulate.a = 0.35 if int(_invulnerable_time * 10.0) % 2 == 0 else 1.0
+		modulate.a = INVULNERABLE_ALPHA if int(_invulnerable_time * BLINK_RATE) % 2 == 0 else 1.0
+		if _invulnerable_time <= 0.0:
+			collision_shape.set_deferred("disabled", false)
+			modulate.a = 1.0
 	else:
 		modulate.a = 1.0
 
@@ -49,6 +55,7 @@ func take_damage(amount: int) -> void:
 		return
 	health -= amount
 	_invulnerable_time = INVULNERABLE_TIME
+	collision_shape.set_deferred("disabled", true)
 	if health <= 0:
 		_die()
 
@@ -62,7 +69,7 @@ func _die() -> void:
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemies"):
-		take_damage(1)
+		take_damage(contact_damage)
 
 
 func _find_nearest_enemy() -> Node2D:
@@ -84,7 +91,6 @@ func _shoot_at(target: Node2D) -> void:
 	
 	bullet.global_position = global_position
 	bullet.direction = (target.global_position - global_position).normalized()
-	bullet.speed = bullet_speed
 	get_tree().current_scene.add_child(bullet)
 
 
