@@ -11,23 +11,32 @@ const SPAWN_INTERVAL_STEP := 0.08
 const SPEED_GROWTH_PER_WAVE := 0.06
 const HEALTH_PER_WAVES := 3
 
+const SAVE_PATH := "user://save.cfg"
+const SAVE_SECTION := "progress"
+const SAVE_KEY := "high_score"
+
 @onready var spawn_timer: Timer = $SpawnTimer
 @onready var player: CharacterBody2D = $Player
 @onready var score_label: Label = $HUD/ScoreLabel
 @onready var health_label: Label = $HUD/HealthLabel
 @onready var wave_label: Label = $HUD/WaveLabel
 @onready var game_over_label: Label = $HUD/GameOverLabel
+@onready var best_label: Label = $HUD/BestLabel
 
 var score := 0
+var high_score := 0
 var wave := 1
 var game_over := false
 
 var _wave_time_left := WAVE_DURATION
 
 
+
 func _ready() -> void:
 	spawn_timer.timeout.connect(_spawn_enemy)
 	player.died.connect(_on_player_died)
+	high_score = _load_high_score()
+	best_label.text = "Best: %d" % high_score
 	_update_hud()
 	_apply_wave_difficulty()
 
@@ -70,6 +79,10 @@ func _on_player_died() -> void:
 	spawn_timer.stop()
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.queue_free()
+	if score > high_score:
+		high_score = score
+		best_label.text = "Best: %d" % high_score
+		_save_high_score()
 	game_over_label.show()
 
 
@@ -100,3 +113,16 @@ func _random_edge_position() -> Vector2:
 			return Vector2(-SPAWN_MARGIN, randf_range(0.0, screen.y))
 		_:
 			return Vector2(screen.x + SPAWN_MARGIN, randf_range(0.0, screen.y))
+
+
+func _load_high_score() -> int:
+	var config := ConfigFile.new()
+	if config.load(SAVE_PATH) != OK:
+		return 0
+	return int(config.get_value(SAVE_SECTION, SAVE_KEY, 0))
+
+
+func _save_high_score() -> void:
+	var config := ConfigFile.new()
+	config.set_value(SAVE_SECTION, SAVE_KEY, high_score)
+	config.save(SAVE_PATH)
