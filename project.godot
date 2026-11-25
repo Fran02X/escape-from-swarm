@@ -15,6 +15,10 @@ run/main_scene="uid://msc1joet4av1"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Audio="*uid://d1itc72mluhgt"
+
 [display]
 
 window/size/viewport_width=960

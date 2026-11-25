@@ -27,8 +27,18 @@ func _physics_process(_delta: float) -> void:
 func take_damage(amount: int) -> void:
 	health -= amount
 	if health <= 0:
+		Audio.play_death()
 		died.emit()
 		queue_free()
+	else:
+		Audio.play_hit()
+		_flash()
+
+
+func _flash() -> void:
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color(2.5, 2.5, 2.5), 0.05)
+	tween.tween_property(self, "modulate", Color.WHITE, 0.12)
 
 
 func _draw() -> void:

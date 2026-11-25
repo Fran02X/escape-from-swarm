@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 signal died
+signal damaged
 
 ## Movement speed in pixels per second.
 @export var speed: float = 300.0
@@ -56,6 +57,7 @@ func take_damage(amount: int) -> void:
 	health -= amount
 	_invulnerable_time = INVULNERABLE_TIME
 	collision_shape.set_deferred("disabled", true)
+	damaged.emit()
 	if health <= 0:
 		_die()
 
@@ -92,6 +94,7 @@ func _shoot_at(target: Node2D) -> void:
 	bullet.global_position = global_position
 	bullet.direction = (target.global_position - global_position).normalized()
 	get_tree().current_scene.add_child(bullet)
+	Audio.play_shoot()
 
 
 func _draw() -> void:

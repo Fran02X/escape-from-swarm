@@ -23,6 +23,8 @@ const SAVE_KEY := "high_score"
 @onready var game_over_label: Label = $HUD/GameOverLabel
 @onready var best_label: Label = $HUD/BestLabel
 
+@export var shake_decay: float = 25.0
+
 var score := 0
 var high_score := 0
 var wave := 1
@@ -30,10 +32,12 @@ var game_over := false
 
 var _wave_time_left := WAVE_DURATION
 
+var _shake_strength := 0.0
 
 
 func _ready() -> void:
 	spawn_timer.timeout.connect(_spawn_enemy)
+	player.damaged.connect(_on_player_damaged)
 	player.died.connect(_on_player_died)
 	high_score = _load_high_score()
 	best_label.text = "Best: %d" % high_score
@@ -42,6 +46,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_update_shake(delta)
 	health_label.text = "HP: %d" % maxi(player.health, 0)
 	if game_over:
 		return
@@ -74,6 +79,10 @@ func _spawn_enemy() -> void:
 	add_child(enemy)
 
 
+func _on_player_damaged() -> void:
+	add_shake(8.0)
+
+
 func _on_player_died() -> void:
 	game_over = true
 	spawn_timer.stop()
@@ -88,6 +97,7 @@ func _on_player_died() -> void:
 
 func _on_enemy_died() -> void:
 	score += 1
+	add_shake(1.5)
 	_update_hud()
 
 
@@ -126,3 +136,12 @@ func _save_high_score() -> void:
 	var config := ConfigFile.new()
 	config.set_value(SAVE_SECTION, SAVE_KEY, high_score)
 	config.save(SAVE_PATH)
+
+
+func add_shake(strength: float) -> void:
+	_shake_strength = maxf(_shake_strength, strength)
+
+
+func _update_shake(delta: float) -> void:
+	_shake_strength = move_toward(_shake_strength, 0.0, shake_decay * delta)
+	position = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * _shake_strength
