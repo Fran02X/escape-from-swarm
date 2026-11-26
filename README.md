@@ -1,69 +1,85 @@
 # Escape From Swarm
 
-A small top-down arena survival game made with **Godot 4**.
+A small top-down arena survival game built with **Godot 4**.
 
-You are stuck in an arena while swarms of geometric creatures close in from
-every side. Move, survive, and take down as many as you can.
+You are trapped in an arena while swarms of geometric creatures close in from
+every side. Your gun aims itself — all you have to do is keep moving.
 
-> **Status: early prototype.** Mechanics and content are still changing fast.
-> Nothing here is final, and save files are not compatible between versions.
+![Gameplay screenshot](docs/screenshot.png)
 
-## Features
+## Play
 
-- [x] Godot project skeleton
-- [ ] Player movement (`WASD`)
-- [ ] Automatic aiming and shooting at the nearest enemy
-- [ ] Enemies spawning from the arena edges and chasing the player
-- [ ] Bullets, damage and enemy death
-- [ ] Player health, death and score
-- [ ] Restart loop
-
-## Requirements
-
-- **Godot 4.7** or newer, standard build (no C#/.NET)
-- Windows, Linux or macOS
-
-The project uses the **Compatibility** renderer, so it also runs on older
-integrated GPUs and can be exported to the web later.
-
-## Running
-
-```bash
-git clone https://github.com/Fran02X/escape-from-swarm.git
-```
-
-1. Open Godot and click **Import**.
-2. Select `project.godot` from the cloned folder.
-3. Press **F5** to run.
+| Platform | How |
+|---|---|
+| Windows | Download `EscapeFromSwarm-windows.zip` from [Releases](../../releases), unzip and run `EscapeFromSwarm.exe` |
+| Browser | Web build coming with the first release |
 
 ## Controls
 
 | Action | Key |
 |---|---|
 | Move | `W` `A` `S` `D` |
+| Shoot | Automatic — fires at the nearest enemy |
+| Restart after game over | `Enter` |
 
-More controls will be documented as mechanics land.
+## Features
+
+- Auto-aiming shooting, so movement is the whole skill
+- Enemies spawn just outside the arena and chase you down
+- 20-second waves with a rising difficulty curve
+- HP with a short invulnerability window (and blinking feedback)
+- Score plus a best score that survives restarts
+- Hit flash, screen shake and procedurally synthesized sound effects
+- **No external art or audio assets** — every circle is drawn in code and every
+  sound is generated as raw PCM at startup
+
+## Run from source
+
+Requires **Godot 4.7** (standard build, not the .NET one).
+
+```bash
+git clone https://github.com/Fran02X/escape-from-swarm.git
+```
+
+Open Godot, click **Import**, select `project.godot`, then press `F5`.
+
+The project uses the **Compatibility** renderer: it runs on older integrated
+GPUs and can be exported to the web.
 
 ## Project structure
 
 ```
 escape-from-swarm/
-├── project.godot      # Godot project configuration
-├── icon.svg           # Project icon
-├── LICENSE
-└── README.md
+├── scenes/          # main, player, enemy and bullet scenes
+├── scripts/         # gameplay scripts
+├── docs/            # screenshots used by this README
+└── project.godot
 ```
 
-Directories for scenes, scripts and assets will be added as the game grows.
+## How it works
+
+| Script | Responsibility |
+|---|---|
+| `scripts/main.gd` | Waves, score, difficulty ramp, screen shake, game over |
+| `scripts/player.gd` | Movement, auto-aim, shooting, health, invulnerability |
+| `scripts/enemy.gd` | Chasing, damage, hit flash, death signal |
+| `scripts/bullet.gd` | Travel, hit detection, lifetime |
+| `scripts/sfx.gd` | Synthesizes short tones and noise bursts into `AudioStreamWAV` |
+| `scripts/audio.gd` | Autoload that plays one-shot sounds |
+
+The high score is stored with `ConfigFile` in `user://save.cfg`.
 
 ## Roadmap
 
-| Version | Goal |
-|---|---|
-| v0.1 | Playable arena loop: move, shoot, die, restart |
-| v0.2 | Waves, difficulty ramp, persistent high score |
-| v0.3 | Upgrades between waves |
-| v0.4 | Audio, visual polish, web export |
+- [x] **v0.1** — playable arena loop: move, shoot, survive, restart
+- [ ] **v0.2** — enemy variety and weapon upgrades
+- [ ] **v0.3** — upgrades between waves
+- [ ] **v1.0** — balance and polish
+
+## Contributing
+
+Issues and pull requests are welcome. For anything larger than a small fix,
+please open an issue first so we can agree on the direction.
 
 ## License
 
